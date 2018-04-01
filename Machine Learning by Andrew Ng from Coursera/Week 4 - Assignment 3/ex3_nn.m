@@ -46,7 +46,7 @@ fprintf('Program paused. Press enter to continue.\n');
 pause;
 
 %% ================ Part 2: Loading Pameters ================
-% In this part of the exercise, we load some pre-initialized 
+% In this part of the exercise, we load some pre-initialized
 % neural network parameters.
 
 fprintf('\nLoading Saved Neural Network Parameters ...\n')

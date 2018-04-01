@@ -36,14 +36,15 @@ grad = zeros(size(theta));
 %           grad = grad + YOUR_CODE_HERE (using the temp variable)
 %
 
-
-
-
-
-
-
-
-
+% Hypothesis 
+z = X*theta;
+h = sigmoid(z);
+% Cost Function
+% size(z)
+theta(1,1) = 0;
+J = ((-1/m)*(y'*log(h) + (1-y)'*log(1-h))) + (lambda*(sum(sum(theta.^2)))/(2*m)); 
+% partial derivative of cost function i.e., gradient
+grad = ((X'*(h - y))/m) + lambda*theta/m;
 
 % =============================================================
 

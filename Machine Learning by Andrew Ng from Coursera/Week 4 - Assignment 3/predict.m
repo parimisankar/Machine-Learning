@@ -20,16 +20,19 @@ p = zeros(size(X, 1), 1);
 %       information see 'help max'. If your examples are in rows, then, you
 %       can use max(A, [], 2) to obtain the max for each row.
 %
+% Pre-activation Layer:
+a1 = [ones(m,1) X];
 
+% Hidden Layer
+z2 = a1*Theta1';
+a2 = [ones(m,1) sigmoid(z2)];
 
+% Activation Layer:
+z3 = a2*Theta2';
+h = sigmoid(z3);
 
-
-
-
-
-
-
+% return the index of the maximum value in the row to prediction
+[j,p] = max(h,[],2);
 % =========================================================================
-
 
 end
