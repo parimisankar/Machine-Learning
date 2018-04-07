@@ -39,6 +39,18 @@ Theta2_grad = zeros(size(Theta2));
 %         cost function computation is correct by verifying the cost
 %         computed in ex4.m
 %
+% Forward Propagation for Hypothesis
+a1 = [ones(m,1), X];
+% size(a1)
+% size(Theta1)
+z2 = a1*Theta1';
+a2 = [ones(size(a1,1),1), sigmoid(z2)];
+% size(a2)
+% size(Theta2)
+z3 = a2*Theta2';
+a3 = sigmoid(z3);
+hx = a3;
+% 
 % Part 2: Implement the backpropagation algorithm to compute the gradients
 %         Theta1_grad and Theta2_grad. You should return the partial derivatives of
 %         the cost function with respect to Theta1 and Theta2 in Theta1_grad and
@@ -49,11 +61,51 @@ Theta2_grad = zeros(size(Theta2));
 %               containing values from 1..K. You need to map this vector into a 
 %               binary vector of 1's and 0's to be used with the neural network
 %               cost function.
+Yvec = zeros(m, num_labels);
+for i = 1:m
+  Yvec(i,y(i)) = 1;
+end
+%
+% Cost Function without Regularization
+J = 1/m * sum(sum((-Yvec.*log(hx)) - ((1-Yvec).*log(1-hx))));
 %
 %         Hint: We recommend implementing backpropagation using a for-loop
 %               over the training examples if you are implementing it for the 
 %               first time.
 %
+% Backpropagation
+%
+for t = 1:m
+  % 1. Feedforward for t th training example
+    % For input layer, l = 1
+    a1 = [1; X(t,:)'];
+    
+    % For hidden layer, l = 2
+    z2 = Theta1*a1;
+    a2 = [1; sigmoid(z2)];
+    % For output layer, l = 3
+    z3 = Theta2*a2;
+    a3 = sigmoid(z3);
+    
+    % Logical arrays to identify the y(t)
+    yk = ([1:num_labels]==y(t))';
+    
+    % Calculate delta for each unit in output layer
+    delta3 = a3 - yk;
+    % Calculate delta for each unit in hidden layer
+    delta2 = (Theta2'*delta3).*[1; sigmoidGradient(z2)];
+    % Remove bias row
+    delta2 = delta2(2:end);
+    
+    % Accumulate the delta
+    Theta1_grad = Theta1_grad + delta2*a1';
+    Theta2_grad = Theta2_grad + delta3*a2';
+    
+end
+% Unregularied Gradient 
+Theta1_grad = Theta1_grad*(1/m);
+Theta2_grad = Theta2_grad*(1/m);
+
 % Part 3: Implement regularization with the cost function and gradients.
 %
 %         Hint: You can implement this around the code for
@@ -61,31 +113,20 @@ Theta2_grad = zeros(size(Theta2));
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 % -------------------------------------------------------------
+% Regularization of Cost Function
+Reg = (lambda/(2*m))*(sum(sum(Theta1(:,2:end).^2))+ sum(sum(Theta2(:,2:end).^2)));
+% Cost Function with Regularization
+J = J + Reg;
 
+% Regularization of gradient
+reg1 = (lambda/m)*[zeros(size(Theta1,1), 1) Theta1(:,2:end)];
+reg2 = (lambda/m)*[zeros(size(Theta2,1), 1) Theta2(:,2:end)];
+% Regularized Gradient
+Theta1_grad = Theta1_grad + reg1;
+Theta2_grad = Theta2_grad + reg2;
 % =========================================================================
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
-
-
 end
